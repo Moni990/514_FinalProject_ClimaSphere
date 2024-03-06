@@ -1,0 +1,150 @@
+#include <Arduino.h>
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEScan.h>
+#include <BLEAdvertisedDevice.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <AccelStepper.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+
+// Stepper motor pin definitions
+#define MOTOR_PIN1 0
+#define MOTOR_PIN2 1
+#define MOTOR_PIN3 2
+#define MOTOR_PIN4 3
+// Initialize AccelStepper for X27 stepper motor (4 pin connection)
+AccelStepper stepper(AccelStepper::FULL4WIRE, MOTOR_PIN1, MOTOR_PIN3, MOTOR_PIN2, MOTOR_PIN4);
+
+// The remote service and characteristic we wish to connect to.
+static BLEUUID serviceUUID("b0baad1d-7659-47ca-9e6e-e6558c186240");
+static BLEUUID charUUID("8d28bf86-3102-4978-8693-47651082cade");
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+static boolean doConnect = false;
+static boolean connected = false;
+static boolean doScan = false;
+static BLERemoteCharacteristic* pRemoteCharacteristic;
+static BLEAdvertisedDevice* myDevice;
+
+// Notification callback function to handle data received from the server
+static void notifyCallback(
+  BLERemoteCharacteristic* pBLERemoteCharacteristic,
+  uint8_t* pData,
+  size_t length,
+  bool isNotify) {
+    display.clearDisplay(); // Clear the display
+    display.setCursor(0,0); // Set cursor to top-left
+
+    String dataStr = "";
+    for(int i = 0; i < length; i++) {
+        dataStr += (char)pData[i];
+    }
+
+    display.println("Best Prediction:");
+    display.println(dataStr);
+    display.display(); // Refresh the display to show new data
+
+    // Rotate stepper motor a small angle and reset to 0
+    stepper.move(100); // Example small move
+    stepper.runToPosition(); // Move the motor
+    stepper.moveTo(0); // Move back to position 0
+    stepper.runToPosition(); // Reset the motor position
+}
+
+class MyClientCallback : public BLEClientCallbacks {
+  void onConnect(BLEClient* pclient) 
+
+
+
+
+
+
+
+
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <Arduino.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLEScan.h>
+#include <BLEAdvertisedDevice.h>
+#include <BLE2902.h>
+#include <stdlib.h>
+#include <AccelStepper.h>
+
+// OLED display TWI address
+#define OLED_ADDR   0x3C
+// Reset pin # (or -1 if sharing Arduino reset pin)
+#define RESET_PIN   -1
+
+#define MOTOR_PIN1 0
+#define MOTOR_PIN2 1
+#define MOTOR_PIN3 2
+#define MOTOR_PIN4 3
+// Initialize AccelStepper for X27 stepper motor (4 pin connection)
+AccelStepper stepper(AccelStepper::FULL4WIRE, MOTOR_PIN1, MOTOR_PIN3, MOTOR_PIN2, MOTOR_PIN4);
+
+static BLEUUID serviceUUID("cbc8b292-c579-417d-bdae-9219a6362a83");
+// The characteristic of the remote service we are interested in.
+static BLEUUID    charUUID("5a645de1-e060-40f5-9745-646e2b954b27");
+
+static boolean doConnect = false;
+static boolean connected = false;
+static boolean doScan = false;
+static BLERemoteCharacteristic* pRemoteCharacteristic;
+static BLEAdvertisedDevice* myDevice;
+
+Adafruit_SSD1306 display(128, 64, &Wire, RESET_PIN);
+
+static void notifyCallback(
+  BLERemoteCharacteristic* pBLERemoteCharacteristic,
+  uint8_t* pData,
+  size_t length,
+  bool isNotify) {
+     display.clearDisplay(); // Clear the display
+     display.setCursor(0,0); // Set cursor to top-left
+
+     String dataStr = "";
+     for(int i = 0; i < length; i++) {
+        dataStr += (char)pData[i];
+     }
+
+     stepper.move(100); // Example small move
+     stepper.runToPosition(); // Move the motor
+     stepper.moveTo(0); // Move back to position 0
+     stepper.runToPosition(); // Reset the motor position
+  }
+
+class MyClientCallback : public BLEClientCallbacks {
+   void onConnect(BLEClient* pclient)
+};
+
+void setup() {
+  Serial.begin(9600);
+  // Wait for serial port to connect
+  while (!Serial) { delay(1); }
+
+  // Initialize with the I2C addr 0x3C (for the 128x64)
+  if(!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  display.clearDisplay();
+
+  // Display static text
+  display.setTextSize(1);      
+  display.setTextColor(SSD1306_WHITE);  
+  display.setCursor(0,0);     
+  display.display();   
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+}
